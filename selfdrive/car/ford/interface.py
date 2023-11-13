@@ -1,5 +1,6 @@
 from cereal import car
 from panda import Panda
+from openpilot.common.params import Params
 from openpilot.common.conversions import Conversions as CV
 from openpilot.selfdrive.car import get_safety_config, create_mads_event
 from openpilot.selfdrive.car.ford.fordcan import CanBus
@@ -20,6 +21,7 @@ class CarInterface(CarInterfaceBase):
   @staticmethod
   def _get_params(ret, candidate, fingerprint, car_fw, experimental_long, docs):
     ret.carName = "ford"
+    dongle_id = Params().get("DongleId", encoding='utf-8')
     if dongle_id != '09136c309ba9461d':
       ret.dashcamOnly = candidate in {CAR.F_150_MK14, CAR.F_150_LIGHTNING_MK1, CAR.MUSTANG_MACH_E_MK1}
 
