@@ -1,5 +1,6 @@
 import copy
 import re
+from collections import namedtuple
 from dataclasses import dataclass, field, replace
 from enum import Enum, IntFlag
 
@@ -11,7 +12,7 @@ from openpilot.selfdrive.car.docs_definitions import CarFootnote, CarHarness, Ca
 from openpilot.selfdrive.car.fw_query_definitions import FwQueryConfig, LiveFwVersions, OfflineFwVersions, Request, StdQueries, p16
 
 Ecu = car.CarParams.Ecu
-
+Button = namedtuple('Button', ['event_type', 'can_addr', 'can_msg', 'values'])
 
 class CarControllerParams:
   STEER_STEP = 5        # LateralMotionControl, 20Hz
