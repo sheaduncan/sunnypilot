@@ -578,7 +578,7 @@ struct CarParams {
 
   steerActuatorDelay @36 :Float32; # Steering wheel actuator delay in seconds
 
-  longitudinalActuatorDelayUpperBound @62 :Float32; # Gas/Brake actuator delay in seconds, upper bound
+  longitudinalActuatorDelayUpperBound @77 :Float32; # Gas/Brake actuator delay in seconds, upper bound
   openpilotLongitudinalControl @37 :Bool; # is openpilot doing the longitudinal control?
   carVin @38 :Text; # VIN number queried during fingerprinting
   dashcamOnly @41: Bool;
