@@ -158,6 +158,15 @@ class CAR(Platforms):
     CarSpecs(mass=2000, wheelbase=3.27, steerRatio=17.0),
   )
 
+BUTTONS = [
+  Button(car.CarState.ButtonEvent.Type.accelCruise, "Steering_Data_FD1", "CcAslButtnSetIncPress", [1]),
+  Button(car.CarState.ButtonEvent.Type.decelCruise, "Steering_Data_FD1", "CcAslButtnSetDecPress", [1]),
+  Button(car.CarState.ButtonEvent.Type.cancel, "Steering_Data_FD1", "CcAslButtnCnclPress", [1]),
+  Button(car.CarState.ButtonEvent.Type.setCruise, "Steering_Data_FD1", "CcAslButtnSetPress", [1]),
+  Button(car.CarState.ButtonEvent.Type.resumeCruise, "Steering_Data_FD1", "CcAsllButtnResPress", [1]),
+]
+
+
 FORD_VEHICLE_TUNINGS = {
   "FORD_F_150_MK14": {
     "brake_actutator_target": -0.45,
