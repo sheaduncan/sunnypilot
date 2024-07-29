@@ -153,7 +153,7 @@ class Car:
     cs_send.carState.cumLagMs = -self.rk.remaining * 1000.
     self.pm.send('carState', cs_send)
 
-  def controls_update(self, CS: car.CarState, CC: car.CarControl):
+  def controls_update(self, CS: car.CarState, CC: car.CarControl, model_data):
     """control update loop, driven by carControl"""
 
     if not self.initialized_prev:
@@ -166,7 +166,7 @@ class Car:
     if self.sm.all_alive(['carControl']):
       # send car controls over can
       now_nanos = self.can_log_mono_time if REPLAY else int(time.monotonic() * 1e9)
-      self.last_actuators_output, can_sends = self.CI.apply(CC, now_nanos)
+      self.last_actuators_output, can_sends = self.CI.apply(CC, now_nanos, model_data)
       self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
 
       self.CC_prev = CC

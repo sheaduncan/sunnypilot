@@ -4,7 +4,7 @@ from openpilot.common.conversions import Conversions as CV
 from openpilot.selfdrive.car import create_button_events, get_safety_config, create_mads_event
 from openpilot.selfdrive.car.ford.fordcan import CanBus
 from openpilot.common.params import Params
-from openpilot.selfdrive.car.ford.values import Ecu, FordFlags, BUTTON_STATES, FordFlagsSP
+from openpilot.selfdrive.car.ford.values import Ecu, FordFlags, BUTTON_STATES, FordFlagsSP, FORD_VEHICLE_TUNINGS
 from openpilot.selfdrive.car.interfaces import CarInterfaceBase
 
 ButtonType = car.CarState.ButtonEvent.Type
@@ -20,19 +20,25 @@ class CarInterface(CarInterfaceBase):
 
   @staticmethod
   def _get_params(ret, candidate, fingerprint, car_fw, experimental_long, docs):
-    ret.carName = "ford"
-    ret.dashcamOnly = bool(ret.flags & FordFlags.CANFD)
+    # print the value of candidate
+    print(f'candidate (interface): {candidate}')
 
-    ret.radarUnavailable = True
+    ret.carName = "ford"
+    ret.dashcamOnly = not (ret.flags & FordFlags.CANFD)
+    print(f'Dashcam Only Mode: {ret.dashcamOnly}')
+    ret.radarUnavailable = not (ret.flags & FordFlags.CANFD)
+    print(f'Radar Unavailable: {ret.radarUnavailable}')
     ret.steerControlType = car.CarParams.SteerControlType.angle
-    ret.steerActuatorDelay = 0.2
+    ret.steerActuatorDelay = 0.05
     ret.steerLimitTimer = 1.0
 
     ret.longitudinalTuning.kpBP = [0.]
     ret.longitudinalTuning.kpV = [0.5]
     ret.longitudinalTuning.kiV = [0.]
+    ret.longitudinalTuning.deadzoneBP = [0., 9.]
+    ret.longitudinalTuning.deadzoneV = [.0, .20]
 
-    if Params().get("DongleId", encoding='utf8') in ("4fde83db16dc0802", "112e4d6e0cad05e1", "e36b272d5679115f", "24574459dd7fb3e0", "83a4e056c7072678"):
+    if Params().get("DongleId", encoding='utf8') in ("09136c309ba9461d"):
       ret.spFlags |= FordFlagsSP.SP_ENHANCED_LAT_CONTROL.value
 
     CAN = CanBus(fingerprint=fingerprint)
@@ -51,6 +57,26 @@ class CarInterface(CarInterfaceBase):
 
     if ret.spFlags & FordFlagsSP.SP_ENHANCED_LAT_CONTROL:
       ret.safetyConfigs[-1].safetyParam |= Panda.FLAG_FORD_ENHANCED_LAT_CONTROL
+
+    ret.longitudinalTuning.kpBP = [0.]
+    ret.longitudinalTuning.kpV = [0.5]
+    ret.longitudinalTuning.kiV = [0.]
+    ret.longitudinalTuning.deadzoneBP = [0., 9.]
+    ret.longitudinalTuning.deadzoneV = [.0, .20]
+
+    # Check FORD_VEHICLE_TUNINGS has a key for the candidate
+    if candidate in FORD_VEHICLE_TUNINGS:
+      print(f'Matched carFingerprint in CarInterface | FingerPrint: {candidate}')
+      ret.steerActuatorDelay =      FORD_VEHICLE_TUNINGS[candidate]["steerActuatorDelay"]
+      ret.steerLimitTimer =         FORD_VEHICLE_TUNINGS[candidate]["steerLimitTimer"]
+      ret.stoppingControl =         FORD_VEHICLE_TUNINGS[candidate]["stoppingControl"]
+      ret.startingState =           FORD_VEHICLE_TUNINGS[candidate]["startingState"]
+      ret.startAccel =              FORD_VEHICLE_TUNINGS[candidate]["startAccel"]
+      ret.stoppingDecelRate =       FORD_VEHICLE_TUNINGS[candidate]["stoppingDecelRate"]
+      ret.longitudinalTuning.kpBP = FORD_VEHICLE_TUNINGS[candidate]["longitudinalTuning"]["kpBP"]
+      ret.longitudinalTuning.kpV =  FORD_VEHICLE_TUNINGS[candidate]["longitudinalTuning"]["kpV"]
+      ret.longitudinalTuning.kiV =  FORD_VEHICLE_TUNINGS[candidate]["longitudinalTuning"]["kiV"]
+      print(f'Candidate Specific Tuning: {FORD_VEHICLE_TUNINGS[candidate]}')
 
     # Auto Transmission: 0x732 ECU or Gear_Shift_by_Wire_FD1
     found_ecus = [fw.ecu for fw in car_fw]
@@ -111,7 +137,7 @@ class CarInterface(CarInterfaceBase):
         self.CS.accEnabled = False
       self.CS.accEnabled = ret.cruiseState.enabled or self.CS.accEnabled
 
-    ret, self.CS = self.get_sp_common_state(ret, self.CS)
+    ret, self.CS = self.get_sp_common_state(ret, self.CS, gap_button=bool(self.CS.distance_button))
 
     if self.CS.out.madsEnabled != self.CS.madsEnabled:
       if self.mads_event_lock:

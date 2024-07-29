@@ -28,9 +28,9 @@ class CarControllerParams:
   # The curvature signal is limited to 0.003 to 0.009 m^-1/sec by the EPS depending on speed and direction
   # Limit to ~2 m/s^3 up, ~3 m/s^3 down at 75 mph
   # Worst case, the low speed limits will allow 4.3 m/s^3 up, 4.9 m/s^3 down at 75 mph
-  ANGLE_RATE_LIMIT_UP = AngleRateLimit(speed_bp=[5, 25], angle_v=[0.0002, 0.0001])
-  ANGLE_RATE_LIMIT_DOWN = AngleRateLimit(speed_bp=[5, 25], angle_v=[0.000225, 0.00015])
-  CURVATURE_ERROR = 0.002  # ~6 degrees at 10 m/s, ~10 degrees at 35 m/s
+  ANGLE_RATE_LIMIT_UP = AngleRateLimit(speed_bp=[5, 25], angle_v=[0.0006, 0.0004])
+  ANGLE_RATE_LIMIT_DOWN = AngleRateLimit(speed_bp=[5, 25], angle_v=[0.0006, 0.0006])
+  CURVATURE_ERROR = 0.004  # ~6 degrees at 10 m/s, ~10 degrees at 35 m/s
 
   ACCEL_MAX = 2.0               # m/s^2 max acceleration
   ACCEL_MIN = -3.5              # m/s^2 max deceleration
@@ -63,6 +63,7 @@ BUTTON_STATES = {
 class RADAR:
   DELPHI_ESR = 'ford_fusion_2018_adas'
   DELPHI_MRR = 'FORD_CADS'
+  STEER_ASSIST_DATA = 'ford_lincoln_base_pt'
 
 
 class Footnote(Enum):
@@ -157,6 +158,29 @@ class CAR(Platforms):
     CarSpecs(mass=2000, wheelbase=3.27, steerRatio=17.0),
   )
 
+FORD_VEHICLE_TUNINGS = {
+  "FORD_F_150_MK14": {
+    "brake_actutator_target": -0.45,
+    "brake_actutator_stdDevLow": 0.05,
+    "brake_actutator_stdDevHigh": 0.45,
+    "precharge_actutator_target": -0.2,
+    "precharge_actutator_stdDevLow": 0.05,
+    "precharge_actutator_stdDevHigh": 0.2,
+    "path_lookup_time": 0.75,
+    "reset_lookup_time": 0.75,
+    "steerActuatorDelay": 0.02,
+    "steerLimitTimer": 1.5,
+    "stoppingControl": True,
+    "startingState": True,
+    "startAccel": 1.0,
+    "stoppingDecelRate": 0.8,
+    "longitudinalTuning": {
+      "kpBP": [0.0],
+      "kpV": [0.5],
+      "kiV": [0],
+    }
+  },
+}
 
 # FW response contains a combined software and part number
 # A-Z except no I, O or W

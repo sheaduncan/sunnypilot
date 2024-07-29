@@ -115,28 +115,26 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     locationdPermanentError @118;
     paramsdTemporaryError @50;
     paramsdPermanentError @119;
-    actuatorsApiUnavailable @120;
-    espActive @121;
-    manualSteeringRequired @122;
-    manualLongitudinalRequired @123;
-    silentPedalPressed @124;
-    silentButtonEnable @125;
-    silentBrakeHold @126;
-    silentWrongGear @127;
-    spReverseGear @128;
-    preKeepHandsOnWheel @129;
-    promptKeepHandsOnWheel @130;
-    keepHandsOnWheel @131;
-    speedLimitActive @132;
-    speedLimitValueChange @133;
-    e2eLongStop @134;
-    e2eLongStart @135;
-    controlsMismatchLong @136;
-    cruiseEngageBlocked @137;
-    laneChangeRoadEdge @138;
-    speedLimitPreActive @139;
-    speedLimitConfirmed @140;
-    torqueNNLoad @141;
+    manualSteeringRequired @120;
+    manualLongitudinalRequired @121;
+    silentPedalPressed @122;
+    silentButtonEnable @123;
+    silentBrakeHold @124;
+    silentWrongGear @125;
+    spReverseGear @126;
+    preKeepHandsOnWheel @127;
+    promptKeepHandsOnWheel @128;
+    keepHandsOnWheel @129;
+    speedLimitActive @130;
+    speedLimitValueChange @131;
+    e2eLongStop @132;
+    e2eLongStart @133;
+    controlsMismatchLong @134;
+    cruiseEngageBlocked @135;
+    laneChangeRoadEdge @136;
+    speedLimitPreActive @137;
+    speedLimitConfirmed @138;
+    torqueNNLoad @139;
 
     radarCanErrorDEPRECATED @15;
     communityFeatureDisallowedDEPRECATED @62;
@@ -176,7 +174,6 @@ struct CarState {
   # CAN health
   canValid @26 :Bool;       # invalid counter/checksums
   canTimeout @40 :Bool;     # CAN bus dropped out
-  canErrorCounter @48 :UInt32;
 
   # car speed
   vEgo @1 :Float32;          # best estimate of speed
@@ -215,7 +212,6 @@ struct CarState {
   espDisabled @32 :Bool;
   accFaulted @42 :Bool;
   carFaultedNonCritical @47 :Bool;  # some ECU is faulted, but car remains controllable
-  espActive @51 :Bool;
 
   # cruise state
   cruiseState @10 :CruiseState;
@@ -236,16 +232,16 @@ struct CarState {
   # clutch (manual transmission only)
   clutchPressed @28 :Bool;
 
-  madsEnabled @52 :Bool;
-  leftBlinkerOn @53 :Bool;
-  rightBlinkerOn @54 :Bool;
-  disengageByBrake @55 :Bool;
-  belowLaneChangeSpeed @56 :Bool;
-  accEnabled @57 :Bool;
-  latActive @58 :Bool;
-  gapAdjustCruiseTr @59 :Int32;
-  endToEndLong @60 :Bool;
-  customStockLong @61 :CustomStockLong;
+  madsEnabled @48 :Bool;
+  leftBlinkerOn @49 :Bool;
+  rightBlinkerOn @50 :Bool;
+  disengageByBrake @51 :Bool;
+  belowLaneChangeSpeed @52 :Bool;
+  accEnabled @53 :Bool;
+  latActive @54 :Bool;
+  gapAdjustCruiseTr @55 :Int32;
+  endToEndLong @56 :Bool;
+  customStockLong @57 :CustomStockLong;
 
   struct CustomStockLong {
     cruiseButton @0 :Int16;
@@ -263,9 +259,6 @@ struct CarState {
 
   fuelGauge @41 :Float32; # battery or fuel tank level from 0.0 to 1.0
   charging @43 :Bool;
-
-  # process meta
-  cumLagMs @50 :Float32;
 
   struct WheelSpeeds {
     # optional wheel speeds
@@ -325,7 +318,6 @@ struct CarState {
   brakeLightsDEPRECATED @19 :Bool;
   steeringRateLimitedDEPRECATED @29 :Bool;
   canMonoTimesDEPRECATED @12: List(UInt64);
-  canRcvTimeoutDEPRECATED @49 :Bool;
 }
 
 # ******* radar state @ 20hz *******
@@ -401,6 +393,42 @@ struct CarControl {
     speed @6: Float32; # m/s
     accel @4: Float32; # m/s^2
     longControlState @5: LongControlState;
+
+    fordVariables @9: FordVariables;
+
+    struct FordVariables {
+      currentCurvature01 @0: Float32;
+      desiredCurvature01 @1: Float32;
+      applyCurvature01 @2: Float32;
+      predictedCurvature01 @3: Float32;
+      predictedPathCurvature01 @4: Float32;
+      spareOrdinal01 @5: Float32;
+      desiredCurvatureRate01 @6: Float32;
+      pathOffsetPosition01 @7: Float32;
+      pathOffsetAdj01 @8: Float32;
+      pathOffsetAdj02 @9: Float32;
+      pathOffset01 @10: Float32;
+      pathAngle01 @11: Float32;
+      applyCurvature02 @12: Float32;
+      desiredCurvatureRate02 @13: Float32;
+      pathOffset02 @14: Float32;
+      pathAngle02 @15: Float32;
+      pathAngle03 @16: Float32;
+      spareOrdinal02 @17: Float32;
+      humanTurn01 @18: Float32;
+      humanTurn02 @19: Float32;
+      poScalingFactor01 @20: Float32;
+      paScalingFactor01 @21: Float32;
+      largeCurveActive01 @22: Float32;
+      predictedCurvature02 @23: Float32;
+      largeCurveActive02 @24: Float32;
+      pcBlendRatio01 @25: Float32;
+      maxAbsPredictedCurvature01 @26: Float32;
+      resetLookupTime01 @27: Float32;
+      pathLookupTime01 @28: Float32;
+      resetCurvature01 @29: Float32;
+      laneBias01 @30: Float32;
+    }
 
     enum LongControlState @0xe40f3a917d908282{
       off @0;
@@ -541,7 +569,8 @@ struct CarParams {
   startingState @70 :Bool; # Does this car make use of special starting state
 
   steerActuatorDelay @36 :Float32; # Steering wheel actuator delay in seconds
-  longitudinalActuatorDelay @58 :Float32; # Gas/Brake actuator delay in seconds
+  longitudinalActuatorDelayLowerBound @61 :Float32; # Gas/Brake actuator delay in seconds, lower bound
+  longitudinalActuatorDelayUpperBound @58 :Float32; # Gas/Brake actuator delay in seconds, upper bound
   openpilotLongitudinalControl @37 :Bool; # is openpilot doing the longitudinal control?
   carVin @38 :Text; # VIN number queried during fingerprinting
   dashcamOnly @41: Bool;
@@ -594,8 +623,8 @@ struct CarParams {
     kiBP @2 :List(Float32);
     kiV @3 :List(Float32);
     kf @6 :Float32;
-    deadzoneBPDEPRECATED @4 :List(Float32);
-    deadzoneVDEPRECATED @5 :List(Float32);
+    deadzoneBP @4 :List(Float32);
+    deadzoneV @5 :List(Float32);
   }
 
   struct LateralINDITuning {
@@ -755,5 +784,4 @@ struct CarParams {
   brakeMaxVDEPRECATED @16 :List(Float32);
   directAccelControlDEPRECATED @30 :Bool;
   maxSteeringAngleDegDEPRECATED @54 :Float32;
-  longitudinalActuatorDelayLowerBoundDEPRECATEDDEPRECATED @61 :Float32;
 }

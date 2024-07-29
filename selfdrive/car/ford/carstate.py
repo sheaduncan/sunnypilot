@@ -17,6 +17,9 @@ class CarState(CarStateBase):
     if CP.transmissionType == TransmissionType.automatic:
       self.shifter_values = can_define.dv["PowertrainData_10"]["TrnRng_D_Rq"]
 
+    self.cluster_min_speed = CV.KPH_TO_MS * 1.5
+    self.cluster_speed_hyst_gap = CV.KPH_TO_MS / 2.
+
     self.vehicle_sensors_valid = False
 
     self.prev_distance_button = 0
@@ -151,6 +154,7 @@ class CarState(CarStateBase):
     if CP.flags & FordFlags.CANFD:
       messages += [
         ("Lane_Assist_Data3_FD1", 33),
+        ("Cluster_Info_3_FD1", 10),
       ]
     else:
       messages += [
