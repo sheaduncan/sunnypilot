@@ -1,7 +1,7 @@
 from cereal import car
 from panda import Panda
 from openpilot.common.conversions import Conversions as CV
-from openpilot.selfdrive.car import create_button_events, get_safety_config, create_mads_event
+from openpilot.selfdrive.car import create_button_events, get_safety_config
 from openpilot.selfdrive.car.ford.fordcan import CanBus
 from openpilot.common.params import Params
 from openpilot.selfdrive.car.ford.values import Ecu, FordFlags, BUTTON_STATES, FordFlagsSP, FORD_VEHICLE_TUNINGS
@@ -35,8 +35,6 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kpBP = [0.]
     ret.longitudinalTuning.kpV = [0.5]
     ret.longitudinalTuning.kiV = [0.]
-    ret.longitudinalTuning.deadzoneBP = [0., 9.]
-    ret.longitudinalTuning.deadzoneV = [.0, .20]
 
     if Params().get("DongleId", encoding='utf8') in ("09136c309ba9461d"):
       ret.spFlags |= FordFlagsSP.SP_ENHANCED_LAT_CONTROL.value
@@ -61,9 +59,7 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kpBP = [0.]
     ret.longitudinalTuning.kpV = [0.5]
     ret.longitudinalTuning.kiV = [0.]
-    ret.longitudinalTuning.deadzoneBP = [0., 9.]
-    ret.longitudinalTuning.deadzoneV = [.0, .20]
-
+    
     # Check FORD_VEHICLE_TUNINGS has a key for the candidate
     if candidate in FORD_VEHICLE_TUNINGS:
       print(f'Matched carFingerprint in CarInterface | FingerPrint: {candidate}')
