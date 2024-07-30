@@ -35,8 +35,6 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kpBP = [0.]
     ret.longitudinalTuning.kpV = [0.5]
     ret.longitudinalTuning.kiV = [0.]
-    ret.longitudinalTuning.deadzoneBP = [0., 9.]
-    ret.longitudinalTuning.deadzoneV = [.0, .20]
 
     if Params().get("DongleId", encoding='utf8') in ("09136c309ba9461d"):
       ret.spFlags |= FordFlagsSP.SP_ENHANCED_LAT_CONTROL.value
@@ -61,9 +59,7 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kpBP = [0.]
     ret.longitudinalTuning.kpV = [0.5]
     ret.longitudinalTuning.kiV = [0.]
-    ret.longitudinalTuning.deadzoneBP = [0., 9.]
-    ret.longitudinalTuning.deadzoneV = [.0, .20]
-
+    
     # Check FORD_VEHICLE_TUNINGS has a key for the candidate
     if candidate in FORD_VEHICLE_TUNINGS:
       print(f'Matched carFingerprint in CarInterface | FingerPrint: {candidate}')
